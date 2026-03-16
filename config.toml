@@ -1,0 +1,27 @@
+# 服务器配置
+[server]
+host = "0.0.0.0"
+port = 8080
+frontend_base_path = "http://127.0.0.1:8080"
+
+# Postgre数据库配置
+[database]
+host = "127.0.0.1"
+port = 5432
+user = "postgres"
+password = "postgres"
+dbname = "atlas_rapid_cloud"
+sslmode = "disable"
+max_open_conns = 5
+max_idle_conns = 2
+# 连接超时时间 单位秒
+conn_max_lifetime = 60
+
+# Redis数据库配置
+[redis]
+host = "127.0.0.1"
+port = 6379
+username = ""
+password = ""
+db = 0
+scheme = "atlas_rapid_cloud"
