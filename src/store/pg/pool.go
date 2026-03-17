@@ -11,13 +11,23 @@ import (
 	"gorm.io/gorm"
 )
 
-// DataBase 数据库连接
+// DataBase
+//
+//	@Description: 数据库链接
 type DataBase struct {
-	SQL  *sql.DB
-	GORM *gorm.DB
+	sql     *sql.DB
+	gormSql *gorm.DB
 }
 
-// OpenDB 创建数据库连接
+// OpenDB
+//
+//	@Description: 创建数据库连接
+//	@param dsn 数据库连接字符串
+//	@param maxOpenConns 最大连接数
+//	@param maxIdleConns 最大空闲连接数
+//	@param connMaxLifetime 连接最大生命周期
+//	@return *DataBase 数据库连接
+//	@return error 错误信息
 func OpenDB(dsn string, maxOpenConns, maxIdleConns int, connMaxLifetime time.Duration) (*DataBase, error) {
 	// 创建数据库连接
 	sqlDB, err := sql.Open("pgx", dsn)
@@ -41,8 +51,6 @@ func OpenDB(dsn string, maxOpenConns, maxIdleConns int, connMaxLifetime time.Dur
 		return nil, fmt.Errorf("测试 postgres 时差失败: %w", err)
 	}
 
-	slog.Warn("测试 postgres 时差", "sub_time", time.Now().Sub(dbTime))
-
 	// 使用同连接创建 GORM 实例
 	gormDB, err := gorm.Open(postgres.New(postgres.Config{
 		Conn: sqlDB,
@@ -52,9 +60,10 @@ func OpenDB(dsn string, maxOpenConns, maxIdleConns int, connMaxLifetime time.Dur
 		return nil, fmt.Errorf("初始化 GORM 失败：%w", err)
 	}
 
-	slog.Info("连接 postgres 数据库成功", "dsn_len", len(dsn))
+	slog.Info("连接 postgres 数据库成功", "dsn_len", len(dsn), "time_difference", time.Now().Sub(dbTime))
+
 	return &DataBase{
-		SQL:  sqlDB,
-		GORM: gormDB,
+		sql:     sqlDB,
+		gormSql: gormDB,
 	}, nil
 }
